@@ -6,12 +6,19 @@ on:
       - master
 
 jobs:
-  test:
+  build:
     name: Run tests
     runs-on: ubuntu-latest
-    steps:
+    steps:      
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: run tests
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@3fbe033aaae657f011f88f29be9e65ed26bd29ef
+
+      - name: Gradle build
+        run: |
+          ./gradlew clean build
