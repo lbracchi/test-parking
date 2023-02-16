@@ -9,9 +9,12 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
-    steps:
+    steps:      
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: run tests
+      - name: Validate Gradle wrapper
+        uses: gradle/gradle-validation-action@v2
+
+      - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
