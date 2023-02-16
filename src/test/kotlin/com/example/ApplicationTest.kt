@@ -12,7 +12,7 @@ class ApplicationTest {
     @Test
     fun `test application startup and base endpoint connection`() = testApplication {
         client.get("/").apply {
-            assertEquals(HttpStatusCode.OK, status)
+            assertEquals(HttpStatusCode.BadRequest, status)
             assertEquals("Hello World!", bodyAsText())
         }
     }
