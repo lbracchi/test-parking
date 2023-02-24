@@ -31,4 +31,3 @@ jobs:
           push: true
           file: ../../Docker/Dockerfile
           tags: antonioiannotta26/personal26:v1
-Footer
