@@ -1,0 +1,1 @@
+test: updated test to new interface-adapter implementation
