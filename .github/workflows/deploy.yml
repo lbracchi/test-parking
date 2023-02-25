@@ -1,44 +1,33 @@
-name: Java CI with Gradle
+name: Publish Docker image on DockerHUb
 
 on:
   push:
-    branches: [ master ]
-    tags: [ deployment ]
+    branches:
+      - master
 
 jobs:
-  build:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-        
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-      
-    - name: Build with Gradle
-      run: ./gradlew clean build
-      
-    - name: Get the version
-      id: vars
-      run: echo ::set-output name=tag::$(echo ${GITHUB_SHA:10})
-      
-    - name: Docker login
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USER }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      run : docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" docker.io
-      
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USERNAME}}/${{secrets.repo_name}}:${{steps.vars.outputs.tag}}
-      
-    - name: Publish dockerimage to docker hub
-      run: docker push ${{secrets.DOCKER_USERNAME}}/${{secrets.repo_name}}:${{steps.vars.outputs.tag}}
-      
-    - name: Build Docker image with latest tag
-      run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USERNAME}}/${{secrets.repo_name}}:latest
-      
-    - name: Publish dockerimage to docker hub
-      run: docker push ${{secrets.DOCKER_USERNAME}}/${{secrets.repo_name}}:latest
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ../../Docker/Dockerfile
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          push: true
+          file: ../../Docker/Dockerfile
+          tags: antonioiannotta26/personal26:v1
